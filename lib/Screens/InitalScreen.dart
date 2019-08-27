@@ -13,11 +13,18 @@ class InitalScreen extends StatefulWidget {
 
 class _InitalScreenState extends State<InitalScreen> {
   SharedPreferences _sharedPreferences;
+  String userName="";
+  String userPhoto="";
 
   @override
   void initState() {
     var result=SharedPreferences.getInstance().then((sharedPrefrence){
       _sharedPreferences=sharedPrefrence;
+      setState(() {
+        userName=_sharedPreferences.getString(SharedPrefrenceConstant.userName);
+        userPhoto=_sharedPreferences.getString(SharedPrefrenceConstant.userPhoto);
+      });
+
 
     });
     super.initState();
@@ -26,7 +33,9 @@ class _InitalScreenState extends State<InitalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_sharedPreferences.getString(SharedPrefrenceConstant.userName)),
+        leading: Image.network(_sharedPreferences.getString(SharedPrefrenceConstant.userPhoto)),
+        title: Text(userName),
+
       ),
     );
 

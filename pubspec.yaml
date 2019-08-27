@@ -25,8 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   google_sign_in: ^4.0.1+1
   firebase_auth: ^0.8.1+1
-  shared_preferences: ^0.5.1+2
-  provider: ^2.0.0+1
+  shared_preferences: "^0.4.2"
+
 
 
 

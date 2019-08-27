@@ -1,6 +1,6 @@
 class SharedPrefrenceConstant {
 
-  static String userName;
-  static String userPhoto;
-  static String userEmail;
+  static String userName="userName";
+  static String userPhoto="userPhoto";
+  static String userEmail="userEmail";
 }

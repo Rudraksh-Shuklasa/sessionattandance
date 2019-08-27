@@ -50,7 +50,7 @@ class Authentication{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(SharedPrefrenceConstant.userName, user.displayName);
     prefs.setString(SharedPrefrenceConstant.userEmail, user.email);
-    prefs.setString(SharedPrefrenceConstant.userPhoto, user.phoneNumber);
+    prefs.setString(SharedPrefrenceConstant.userPhoto, user.photoUrl);
 
 
     return 'signInWithGoogle succeeded: $user';
