@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './LoginScreen.dart';
 import '../FirebaseRepository/Authentication.dart';
 import '../utils/SharedPrefrenceConstant.dart';
+import '../FirebaseRepository/Authentication.dart';
 
 class InitalScreen extends StatefulWidget {
   @override
@@ -16,13 +17,22 @@ class _InitalScreenState extends State<InitalScreen> {
   String userName="";
   String userPhoto="";
 
+
+   void _logout(){
+     Authentication authentication=new Authentication();
+     authentication.signOutGoogle();
+
+     _sharedPreferences.setBool(SharedPrefrenceConstant.isCureentUserLogin, false);
+     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){LoginScreen();}));
+
+   }
+
   @override
   void initState() {
     var result=SharedPreferences.getInstance().then((sharedPrefrence){
       _sharedPreferences=sharedPrefrence;
       setState(() {
-        userName=_sharedPreferences.getString(SharedPrefrenceConstant.userName);
-        userPhoto=_sharedPreferences.getString(SharedPrefrenceConstant.userPhoto);
+       _sharedPreferences=sharedPrefrence;
       });
 
 
@@ -34,7 +44,13 @@ class _InitalScreenState extends State<InitalScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: Image.network(_sharedPreferences.getString(SharedPrefrenceConstant.userPhoto)),
-        title: Text(userName),
+        title: Text(_sharedPreferences.getString(SharedPrefrenceConstant.userName)),
+        actions: <Widget>[
+          InkWell(
+             onTap: _logout,
+             child:Image.asset("assets/Images/log-out.png") ,
+          )
+        ],
 
       ),
     );
