@@ -71,9 +71,6 @@ class Authentication{
 
 
   void createRecord(User currentUser) async {
-
-
-
     await databaseReference.collection("Users")
         .document(currentUser.uid)
         .setData({
@@ -83,12 +80,5 @@ class Authentication{
       SharedPrefrenceConstant.userEmail: currentUser.email,
 
     });
-
-    DocumentReference ref = await databaseReference.collection("books")
-        .add({
-      'title': 'Flutter in Action',
-      'description': 'Complete Programming Guide to learn Flutter'
-    });
-    print(ref.documentID);
   }
 }
