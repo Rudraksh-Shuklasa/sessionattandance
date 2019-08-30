@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 import './Screens/LoginScreen.dart';
-import './Screens/InitalScreen.dart';
+import './Screens/UserInitalScreen.dart';
+import './Screens/AdminInitialScreen.dart';
 import './utils/SharedPrefrenceConstant.dart';
 void main() => runApp(SessionAttandence());
 
@@ -29,9 +30,18 @@ class _SessionAttandenceState extends State<SessionAttandence> {
     }
     else if(value.getBool(SharedPrefrenceConstant.isCureentUserLogin))
     {
-      setState(() {
-        nextScreen= InitalScreen();
-      });
+      if(value.getBool(SharedPrefrenceConstant.isAdmin))
+        {
+          setState(() {
+            nextScreen= AdminInitialScreen();
+          });
+        }
+      else{
+        setState(() {
+          nextScreen= UserInitalScreen();
+        });
+      }
+
 
     }
     else{

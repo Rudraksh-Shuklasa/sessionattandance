@@ -1,19 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Session{
+  String sessionId;
   String topic;
-  String Instructor;
+  String instructor;
   var time;
   var incomingTime;
 
   Session(
+      this.sessionId,
       this.topic,
-      this.Instructor,
+      this.instructor,
       this.time,
       this.incomingTime
       );
 
   Session._({
+    this.sessionId,
     this.topic,
-    this.Instructor,
+    this.instructor,
     this.time,
     this.incomingTime
   }
@@ -22,8 +27,9 @@ class Session{
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return new Session._(
+        sessionId: json['SessionId'],
         topic: json['Topic'],
-        Instructor: json['Instructor'],
+        instructor: json['Instructor'],
         time: json['Time'],
         incomingTime: json['incomingTime']
     );

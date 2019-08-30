@@ -26,12 +26,6 @@ class Authentication{
       user=value.user;
     });
 
-
-
-
-
-
-    // Checking if email and name is null
     assert(user.email != null);
     assert(user.displayName != null);
     assert(user.photoUrl != null);
@@ -47,16 +41,38 @@ class Authentication{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
 
-    User userModel=new User(user.uid, user.email, user.displayName, user.photoUrl);
+    User userModel=new User(user.uid, user.email, user.displayName, user.photoUrl,false);
+    final snapShot = await Firestore.instance
+        .collection('Users')
+        .document(user.uid)
+        .get();
 
-    prefs.setString(SharedPrefrenceConstant.userName,userModel.name);
-    prefs.setString(SharedPrefrenceConstant.userEmail, userModel.email);
-    prefs.setString(SharedPrefrenceConstant.userPhoto, userModel.photoUrl);
-    prefs.setString(SharedPrefrenceConstant.userId,userModel.uid);
+    if (snapShot == null || !snapShot.exists) {
+      createRecord(userModel);
+      prefs.setString(SharedPrefrenceConstant.userName,userModel.name);
+      prefs.setString(SharedPrefrenceConstant.userEmail, userModel.email);
+      prefs.setString(SharedPrefrenceConstant.userPhoto,userModel.userPhoto);
+      prefs.setString(SharedPrefrenceConstant.userId,userModel.uid);
+      prefs.setBool(SharedPrefrenceConstant.isAdmin,false);
+
+    }
+    else{
+      var document = await Firestore.instance.collection("Users").document(user.uid).get();
+
+
+      prefs.setString(SharedPrefrenceConstant.userName,document.data[SharedPrefrenceConstant.userName]);
+      prefs.setString(SharedPrefrenceConstant.userEmail, document.data[SharedPrefrenceConstant.userEmail]);
+      prefs.setString(SharedPrefrenceConstant.userPhoto, document.data[SharedPrefrenceConstant.userPhoto]);
+      prefs.setString(SharedPrefrenceConstant.userId,document.data[SharedPrefrenceConstant.userId]);
+      prefs.setBool(SharedPrefrenceConstant.isAdmin,document.data[SharedPrefrenceConstant.isAdmin]);
+
+
+    }
+
 
     prefs.setBool(SharedPrefrenceConstant.isCureentUserLogin, true);
 
-    createRecord(userModel);
+
 
     return 'signInWithGoogle succeeded: $user';
   }
@@ -76,8 +92,9 @@ class Authentication{
         .setData({
       SharedPrefrenceConstant.userId: currentUser.uid,
       SharedPrefrenceConstant.userName: currentUser.name,
-      SharedPrefrenceConstant.userPhoto: currentUser.photoUrl,
+      SharedPrefrenceConstant.userPhoto: currentUser.userPhoto,
       SharedPrefrenceConstant.userEmail: currentUser.email,
+      SharedPrefrenceConstant.isAdmin:false
 
     });
   }

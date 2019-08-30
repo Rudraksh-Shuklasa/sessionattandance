@@ -2,12 +2,14 @@ class User{
   String uid;
   String email;
   String name;
-  String photoUrl;
+  String userPhoto;
+  bool isAdmin;
 
   User(
       this.uid,
       this.email,
       this.name,
-      this.photoUrl
+      this.userPhoto,
+      this.isAdmin
       );
 }

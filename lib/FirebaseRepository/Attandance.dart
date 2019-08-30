@@ -27,8 +27,8 @@ class Attandance{
             .setData({
           SharedPrefrenceConstant.userId: user.uid,
           SharedPrefrenceConstant.userName: user.name,
-          SharedPrefrenceConstant.userPhoto: user.photoUrl,
-          SharedPrefrenceConstant.timeStamp:DateTime.now().millisecondsSinceEpoch
+          SharedPrefrenceConstant.userPhoto: user.userPhoto,
+          SharedPrefrenceConstant.timeStamp:FieldValue.serverTimestamp()
 
         });
         addSessionToUser(user.uid,sessionId);
@@ -68,7 +68,6 @@ class Attandance{
    }
 
 
-
    void addSessionToUser(String userId,String sessionId)
    {
      DocumentReference documentReference = Firestore.instance.collection("Sessions").document(sessionId);
@@ -77,7 +76,7 @@ class Attandance{
 
            Session session=  Session.fromJson(datasnapshot.data);
 
-           Map<String, dynamic>map = {"incomingTime":DateTime.now().millisecondsSinceEpoch };
+           Map<String, dynamic>map = {"incomingTime":FieldValue.serverTimestamp()};
            datasnapshot.data.addAll(map);
            databaseReference.collection("Users")
                .document(userId).collection("SessionAttended").document(sessionId)

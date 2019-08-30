@@ -35,7 +35,7 @@ class _AttendeentSessionItemState extends State<AttendeentSessionItem> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(widget._session.topic,style: TextStyle(fontSize: 14,color: Colors.black),),
-                          Text(widget._session.Instructor),
+                          Text(widget._session.instructor),
                         ],
                       )
                 ),
@@ -45,8 +45,8 @@ class _AttendeentSessionItemState extends State<AttendeentSessionItem> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
+                        Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.time)))),
                         Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.incomingTime)))),
-                        Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.time))))
                       ],
                     ) ,
                   )

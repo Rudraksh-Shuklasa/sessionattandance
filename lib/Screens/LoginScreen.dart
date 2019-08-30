@@ -3,8 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-import './InitalScreen.dart';
+import './UserInitalScreen.dart';
+import './AdminInitialScreen.dart';
 import '../FirebaseRepository/Authentication.dart';
+import '../utils/SharedPrefrenceConstant.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -13,8 +15,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  SharedPreferences sharedPreferences;
+
+  @override
+  void initState() {
+    setSharedPrefrence();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+
+
 
     return Scaffold(
       body: Container(
@@ -41,10 +52,17 @@ class _LoginScreenState extends State<LoginScreen> {
       splashColor: Colors.grey,
       onPressed: () {
         authentication.signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
-                return InitalScreen();
+                if(sharedPreferences.getBool(SharedPrefrenceConstant.isAdmin))
+                  {
+                    return AdminInitialScreen();
+                  }
+                else{
+                  return UserInitalScreen();
+                }
+
               },
             ),
           );
@@ -75,4 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  Future setSharedPrefrence() async {
+    await SharedPreferences.getInstance().then((value){
+      setState(() {
+        sharedPreferences=value;
+      });
+    });
+  }
+
+
 }
