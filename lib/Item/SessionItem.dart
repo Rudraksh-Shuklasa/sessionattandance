@@ -15,7 +15,6 @@ class SessionItem extends StatefulWidget {
 }
 
 class _SessionItemItemState extends State<SessionItem> {
-  var time = new DateFormat('hh:mm a  | dd-MM-yy');
 
 
   @override
@@ -49,7 +48,7 @@ class _SessionItemItemState extends State<SessionItem> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.time))))
+                              Text(widget._session.time.toString())
                             ],
                           ) ,
                         )

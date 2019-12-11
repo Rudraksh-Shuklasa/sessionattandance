@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="SessionAttandance.SolutionAnalysts.sessionattandance">
+    package="sessionattandance.solutionanalysts.sessionattandance">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that

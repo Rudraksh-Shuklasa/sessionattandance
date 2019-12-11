@@ -36,6 +36,8 @@ dependencies:
   uuid: 2.0.1
   screenshot: ^0.1.1
   datetime_picker_formfield: ^0.1.8
+  simple_permissions: ^0.1.9
+  file_utils: ^0.1.3
 
 
 

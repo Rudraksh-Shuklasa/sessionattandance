@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:simple_permissions/simple_permissions.dart';
 
 
 
@@ -25,6 +28,11 @@ import '../Model/User.dart';
 import '../Widget/ErrorDialog.dart';
 import '../Widget/AdminDashboard.dart';
 import '../Widget/NewSessionDialog.dart';
+import 'dart:ui' as ui;
+import 'dart:io' as io;
+import 'package:file_utils/file_utils.dart';
+
+
 
 class AdminInitialScreen extends StatefulWidget {
   @override
@@ -43,6 +51,10 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
   File _imageFile;
   ScreenshotController _screenshotController = ScreenshotController();
   String _sessionTopic;
+  String _sessionTime;
+  String _sessionInsturctor;
+  bool _allowWriteFile = false;
+
 
 
 
@@ -79,6 +91,27 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
 
   }
 
+  GlobalKey _globalKey = new GlobalKey();
+
+  Future<Uint8List> _capturePng() async {
+    try {
+      print('inside');
+      RenderRepaintBoundary boundary =
+      _globalKey.currentContext.findRenderObject();
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData byteData =
+      await image.toByteData(format: ui.ImageByteFormat.png);
+      var pngBytes = byteData.buffer.asUint8List();
+      var bs64 = base64Encode(pngBytes);
+      print(pngBytes);
+      print(bs64);
+      _createFileFromString(bs64);
+      setState(() {});
+      return pngBytes;
+    } catch (e) {
+      print("Rudraksh ->$e");
+    }
+  }
   @override
   void initState() {
     setInit();
@@ -86,6 +119,7 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
   }
   @override
   Widget build(BuildContext context) {
+
     if(isListLoding)
     {
       return Scaffold(
@@ -98,21 +132,38 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
 
         return _qrImg != null?
         Scaffold(
+            resizeToAvoidBottomPadding: true,
               appBar: AppBar(
-                leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white), onPressed: (){setState(() {
-                  _qrImg=null;
-                });}),
+                leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white), onPressed: () {
+                  setState(() {
+                    _qrImg = null;
+                  });
+                }),
                 actions: <Widget>[
-                  IconButton(icon: Icon(Icons.save), onPressed: (){})
+                  IconButton(icon: Icon(Icons.save), onPressed: _capturePng)
                 ],
               ),
-              body: Screenshot(
-                controller: _screenshotController,
+              body: RepaintBoundary(
+                key: _globalKey,
                 child:Center(
                 child: Card(
                   child:Column(
                     children: <Widget>[
-                      Text(_sessionTopic,style: TextStyle(color: Colors.black,fontSize: 18),),
+                      Container(
+                        margin: EdgeInsets.only(top: 24),
+                        child: Text(_sessionTopic,style: TextStyle(color: Colors.black,fontSize: 24),),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 14,left: 12,right: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(_sessionTime,style: TextStyle(color: Colors.black,fontSize: 18),),
+                            Text(_sessionInsturctor,style: TextStyle(color: Colors.black,fontSize: 18),),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(
                         height: 32,
                       ),
@@ -158,6 +209,7 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
   Future setInit() async {
     _sharedPreferences=await SharedPreferences.getInstance();
 
+    requestWritePermission();
 
     setState(()  {
       _sharedPreferences=_sharedPreferences;
@@ -170,6 +222,15 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
       );
     });
 
+  }
+  requestWritePermission() async {
+    PermissionStatus permissionStatus = await SimplePermissions.requestPermission(Permission.WriteExternalStorage);
+
+    if (permissionStatus == PermissionStatus.authorized) {
+      setState(() {
+        _allowWriteFile = true;
+      });
+    }
   }
 
 
@@ -213,7 +274,7 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
     });
   }
 
-  void _generateQR(String content,String topic) async {
+  void _generateQR(String content,String topic,String currentTime,String instructor) async {
     if (content.trim().length == 0) {
       _scaffoldKey.currentState
           .showSnackBar(SnackBar(content: Text('Please enter qr content')));
@@ -233,6 +294,9 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
     setState(() {
       _qrImg = image;
       _sessionTopic=topic;
+      _sessionTime=currentTime;
+      _sessionInsturctor=instructor;
+
     });
 
 
@@ -244,6 +308,30 @@ class _AdminInitialScreenState extends State<AdminInitialScreen> {
 //      await ImageGallerySaver.saveImage(image.readAsBytesSync());
 //    });
 //    }
+
+
+
+  Future<String> _createFileFromString(String encodedStr) async {
+    Uint8List bytes = base64.decode(encodedStr);
+    String dir = (await getExternalStorageDirectory()).path;
+
+
+
+   FileUtils.mkdir(["/storage/emulated/0/SessionAttendance"]);
+
+
+
+    File file = File("storage/emulated/0/SessionAttendance/" + _sessionTopic.replaceAll(" ", "") + ".png");
+
+    ErrorDialog dialog=new ErrorDialog(context,"Image save","Image was saved successfully","Ok");
+    dialog.showErrorBox();
+
+
+    await file.writeAsBytes(bytes);
+    var a=file.path;
+    print("Rudraksh -> $a");
+    return file.path;
+  }
 
   }
 

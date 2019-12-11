@@ -21,6 +21,7 @@ class _NewSessionDialogState extends State<NewSessionDialog> {
   final _instuctorController = TextEditingController();
   SessionList _sessionList=new SessionList();
   DateTime _selectedDate;
+  FocusNode textSecondFocusNode = new FocusNode();
 
   void _submitData() {
    Session session;
@@ -44,11 +45,13 @@ class _NewSessionDialogState extends State<NewSessionDialog> {
       return;
     }
 
-    int currentTime=DateTime.now().millisecondsSinceEpoch;
+    var currentTime=DateFormat("h:mm a  | dd-MM-yy").format(_selectedDate);
+
+    
     session=new Session(sessionId, topic, instuctor.toString(), currentTime, null);
    _sessionList.createRecord(session);
 
-    widget.getQr(sessionId,topic);
+    widget.getQr(sessionId,topic,currentTime,instuctor);
     Navigator.of(context).pop();
   }
 
@@ -87,6 +90,7 @@ class _NewSessionDialogState extends State<NewSessionDialog> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      primary: false,
       child: Card(
         elevation: 5,
         child: Container(
@@ -94,19 +98,24 @@ class _NewSessionDialogState extends State<NewSessionDialog> {
             top: 10,
             left: 10,
             right: 10,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
-          ),
+              bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              TextField(
+              TextFormField(
+
+                onFieldSubmitted: (String value) {
+                  FocusScope.of(context).requestFocus(textSecondFocusNode);
+                },
+                textInputAction: TextInputAction.next,
                 decoration: InputDecoration(labelText: 'Topic'),
                 controller: _topicController,
                 // onChanged: (val) {
                 //   titleInput = val;
                 // },
               ),
-              TextField(
+              TextFormField(
+                focusNode: textSecondFocusNode,
                 decoration: InputDecoration(labelText: 'Instructor'),
                 controller: _instuctorController,
               ),
@@ -140,6 +149,7 @@ class _NewSessionDialogState extends State<NewSessionDialog> {
                 textColor: Colors.white,
                 onPressed: _submitData,
               ),
+
             ],
           ),
         ),

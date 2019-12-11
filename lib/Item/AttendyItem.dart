@@ -47,7 +47,7 @@ class _AttendyItemState extends State<AttendyItem> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(widget._attendy.name,style: TextStyle(color: Colors.black,fontSize: 16),),
-                            Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._attendy.incomeingTime))))
+                            Text(time.format(widget._attendy.incomeingTime.toDate()))
                           ],
                         ) ,
                       )

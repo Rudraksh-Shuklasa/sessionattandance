@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   SharedPreferences sharedPreferences;
+  bool isLoding=false;
 
   @override
   void initState() {
@@ -26,22 +27,36 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
 
 
+if(isLoding)
+  {
+    return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(backgroundColor: Colors.cyanAccent,strokeWidth: 2,),
+        )
+    );
 
+
+
+  }
+else
+  {
     return Scaffold(
       body: Container(
-        height: double.infinity,
-        color: Colors.white,
-        child: Column(
-          children: <Widget>[
-            Center(
-              child: Image.asset("assets/Images/sa_40.png",width: 216,height: 216,),
-            ),
-            _signInButton()
+          height: double.infinity,
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: Image.asset("assets/Images/sa_40.png",width: 216,height: 216,),
+              ),
+              _signInButton()
 
-          ],
-        )
+            ],
+          )
       ),
     );
+  }
+
   }
 
 
@@ -51,16 +66,22 @@ class _LoginScreenState extends State<LoginScreen> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
+        setState(() {
+          isLoding=true;
+        });
         authentication.signInWithGoogle().whenComplete(() {
+          setState(() {
+            isLoding=false;
+          });
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
-                if(sharedPreferences.getBool(SharedPrefrenceConstant.isAdmin))
+                if(sharedPreferences.getBool(SharedPrefrenceConstant.isAdmin)==null || !(sharedPreferences.getBool(SharedPrefrenceConstant.isAdmin)))
                   {
-                    return AdminInitialScreen();
+                    return UserInitalScreen();
                   }
                 else{
-                  return UserInitalScreen();
+                  return AdminInitialScreen();
                 }
 
               },

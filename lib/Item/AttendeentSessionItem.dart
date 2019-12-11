@@ -45,7 +45,7 @@ class _AttendeentSessionItemState extends State<AttendeentSessionItem> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.time)))),
+                        Text(widget._session.time.toString()),
                         Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.incomingTime)))),
                       ],
                     ) ,

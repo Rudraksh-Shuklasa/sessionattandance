@@ -20,7 +20,7 @@ class AttendyListScreen extends StatefulWidget {
 }
 
 class _AttendyListScreenState extends State<AttendyListScreen> {
-  var time = new DateFormat('hh:mm a  | dd-MM-yy');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +32,7 @@ class _AttendyListScreenState extends State<AttendyListScreen> {
             Container(
               padding: EdgeInsets.only(right: 12),
             child: Center(
-              child:  Text(time.format(new DateTime.fromMillisecondsSinceEpoch((widget._session.time))),style: TextStyle(fontSize: 12,color: Colors.white),),
+              child:  Text((widget._session.time),style: TextStyle(fontSize: 12,color: Colors.white),),
             ) ,
            )
 
@@ -53,6 +53,12 @@ class _AttendyListScreenState extends State<AttendyListScreen> {
                 return new ListView(
                   children: snapshot.data.documents
                       .map((DocumentSnapshot document) {
+                    var time = new DateTime.now().millisecondsSinceEpoch ;
+                    Timestamp date_ = document['incomingTime'];
+                    if(date_ !=null) {
+                      time =date_.millisecondsSinceEpoch;
+                    }
+
                     return new AttendyItem(Attendy(document['userId'].toString(),document['userPhoto'].toString(),document['userName'].toString(),document['timeStamp']));
                   }).toList(),
                 );
